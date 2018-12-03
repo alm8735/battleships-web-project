@@ -1,12 +1,3 @@
 body {
-    background-color: rgb(42, 197, 224, 100);
-}
-
-a.button {
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
-
-    text-decoration: none;
-    color: initial;
+    background-color: aquamarine;
 }
