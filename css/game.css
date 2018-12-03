@@ -1,0 +1,38 @@
+header {
+    background:grey;
+    min-height:30px;
+}
+
+.board{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.board div div {
+    overflow:hidden;
+}
+
+.board div div div {
+    min-height:50px;
+    min-width:50px;
+    float:left;
+}
+
+.board div div:nth-child(2n) div:nth-child(2n){
+    background-color:rgb(47, 58, 211);
+}
+
+.board div div:nth-child(2n) div:nth-child(2n-1){
+    background-color:rgb(52, 163, 207);
+}
+
+.board div div:nth-child(2n-1) div:nth-child(2n){
+    background-color:rgb(52, 163, 207);
+}
+
+.board div div:nth-child(2n-1) div:nth-child(2n-1){
+    background-color:rgb(47, 58, 211);
+}
+
