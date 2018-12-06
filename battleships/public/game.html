@@ -17,16 +17,17 @@
 
     <main>
 
-        <div class="board" id="player-board">
+        <div class="board-parent" id="player-board">
             <h3>Your ships</h3>
         </div>
-
-        <div class="board" id="opponent-board">
-            <h3>The opponent's ships</h3>
-        </div>
-
+        
         <div id="ship-pallet">
             <h3>Your ship pallet</h3>
+            <label><input type="checkbox" name="rotate" value=true>Rotate Ship</label>
+        </div>
+
+        <div class="board-parent" id="opponent-board">
+            <h3>The opponent's ships</h3>
         </div>
 
         <div id="message">

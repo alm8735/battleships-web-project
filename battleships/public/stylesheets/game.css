@@ -3,35 +3,39 @@ header {
     min-height:30px;
 }
 
-.board{
+.board-parent{
     margin-left: 10px;
     margin-right: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.board div div {
+.row {
     overflow:hidden;
 }
 
-.board div div div {
+.cell {
     min-height:30px;
     min-width:30px;
     float:left;
 }
 
-.board div div:nth-child(2n) div:nth-child(2n){
+.cell.ship {
+    background-color: grey !important;
+}
+
+.row:nth-child(2n) .cell:nth-child(2n){
     background-color:rgb(47, 58, 211);
 }
 
-.board div div:nth-child(2n) div:nth-child(2n-1){
+.row:nth-child(2n) .cell:nth-child(2n-1){
     background-color:rgb(52, 163, 207);
 }
 
-.board div div:nth-child(2n-1) div:nth-child(2n){
+.row:nth-child(2n-1) .cell:nth-child(2n){
     background-color:rgb(52, 163, 207);
 }
 
-.board div div:nth-child(2n-1) div:nth-child(2n-1){
+.row:nth-child(2n-1) .cell:nth-child(2n-1){
     background-color:rgb(47, 58, 211);
 }
