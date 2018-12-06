@@ -6,6 +6,7 @@
     <title>Battleships</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/game.css" />
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="javascripts/main.js"></script>
 </head>
 <body>
@@ -16,56 +17,23 @@
 
     <main>
 
-        <div>
         <div class="board" id="player-board">
-            <div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
             <h3>Your ships</h3>
         </div>
 
         <div class="board" id="opponent-board">
-            <div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
             <h3>The opponent's ships</h3>
         </div>
 
-        <div id="ship-pallet"></div>
-
-        <div id="messages">
-            <p>Message here</p>
+        <div id="ship-pallet">
+            <h3>Your ship pallet</h3>
         </div>
 
-        <button id="play">Play</button>
+        <div id="message">
+            <p>Place your ships and click "Ready" when you are done.</p>
+        </div>
+
+        <button id="ready-button">Ready</button>
 
     </main>
 
