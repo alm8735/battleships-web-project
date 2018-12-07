@@ -24,6 +24,14 @@ header {
     background-color: grey !important;
 }
 
+.cell.hit {
+    background-color: red !important;
+}
+
+.cell.miss {
+    background-color: rgb(194, 194, 194) !important;
+}
+
 .row:nth-child(2n) .cell:nth-child(2n){
     background-color:rgb(47, 58, 211);
 }

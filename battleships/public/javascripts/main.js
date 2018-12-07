@@ -4,17 +4,22 @@ var main = function() {
 
     //////////////////////// Client-Side Game Data /////////////////////
 
+    // object to represent board cell - to send to server
+    function Cell(row, column) {
+        this.row = row;
+        this.column = column;
+    }
+
     // variable to save whether player is ready and waiting to start
     var playerReady = false;
 
-    // variable to save whether the game has commenced
-    var gameCommenced = false;
-
+    // variable to save whether it's the player's turn
     var playerTurn = false;
     
     var ships = {};
 
-    var selectedOpponentSquare;
+    // most recent cell selected on the opponent board
+    var $selectedOppCell;
 
     //////////////////// Server-Independent Processing ////////////////
 
@@ -88,6 +93,18 @@ var main = function() {
                 $(cell).addClass("ship");
             });
         }
+        
+        // function to construct an array of Cell objects from an array of cell DOM elements
+        var toCellObjectArray = function(DOMCells) {
+            var cellObjects = [];
+            var row; var column;
+            DOMCells.forEach((cell => {
+                row = $(cell).attr("row");
+                column = $(cell).attr("column");
+                cellObjects.push(new Cell(row, column));
+            }));
+            return cellObjects;
+        }
     
         // add a ship to the player board when the board is clicked
         $("#player-board .cell").click((event) => {
@@ -114,7 +131,7 @@ var main = function() {
                     }
                     
                     if (!containsShip(cellArray)) {
-                        ship.places.push(cellArray);
+                        ship.cells.push( toCellObjectArray(cellArray) );
                         setShip(cellArray);
                         ship.unplaced -= 1;
                         $("#ship-pallet #" + shipKey + " .quantity").text(ship.unplaced);
@@ -176,8 +193,7 @@ var main = function() {
     }
 
     // function to kick off game
-    var startGame = function(myTurn) {
-        gameCommenced = true;
+    var nextTurn = function(myTurn) {
         playerTurn = myTurn;
         
         if (playerTurn) {
@@ -185,8 +201,8 @@ var main = function() {
             enableOpponentSquare();
         } else {
             $("#message p").text("Opponent's turn...");
+            disableOpponentSquare();
         }
-
     }
 
     // Server Messages //
@@ -200,14 +216,12 @@ var main = function() {
             
             // Receive Message: Player Ships
             if (message.ships != undefined) {
-                console.log("Received ships");
                 ships = message.ships;
                 generateRadioButtons();
             }
 
             // Receive Message: Ready Request Response
             else if (message.readyAccepted != undefined) {
-                console.log("Accepted: ", message.readyAccepted);
                 if (message.readyAccepted) {
                     setPlayerReady();
                 } else {
@@ -215,23 +229,45 @@ var main = function() {
                 }
             }
 
-            // Receive Message: Found Opponent
-            else if (message.foundOpponent != undefined && message.foundOpponent) {
-                startGame(message.yourTurn);
+            // Receive Message: Next Turn
+            else if (message.yourTurn != undefined) {
+                nextTurn(message.yourTurn);
             }
 
+            // Receive Message: Opponent has been hit
+            // test- will be improved
+            else if (message.hitOpponentStatus != undefined) {
+                $selectedOppCell.addClass("attacked");
+
+                switch(message.hitOpponentStatus) {
+                    case "miss":
+                        $selectedOppCell.addClass("miss");
+                        break;
+                    case "obliterated":
+                        console.log("Opponent obliterated!!");
+                    case "hit":
+                    case "sunk":
+                        $selectedOppCell.addClass("hit");
+                }
+            }
+
+            // Receive Message: Player has been hit
+            // test- will be improved
+            else if (message.hitSelfStatus != undefined) {
+                $selectedOppCell.addClass("attacked");
+
+                switch(message.hitOpponentStatus) {
+                    case "miss":
+                        $selectedOppCell.addClass("miss");
+                        break;
+                    case "obliterated":
+                        console.log("Opponent obliterated!!");
+                    case "hit":
+                    case "sunk":
+                        $selectedOppCell.addClass("hit");
+                }
+            }
         }
-        // Message: Found opponent
-
-        // Message: your go
-
-        // Message: Sunk opponent ship
-        // Message: Hit opponent ship
-        // Message: Missed opponent ship
-
-        // Message: Sunk your ship
-        // Message: Hit your ship
-        // Message: Missed your ship
 
         // Message: Player has won
         // Message: Player has lost
@@ -247,9 +283,10 @@ var main = function() {
     function enableOpponentSquare() {
         $("#opponent-board .cell").click((event) => {
             var $cell = $(event.currentTarget);
-            //if (playerTurn) {
-                window.alert(`Attacked Opponent Square (${$cell.attr("row")}, ${$cell.attr("column")})`);
-            //}
+            $selectedOppCell = $cell;
+            var cellObject = new Cell($cell.attr("row"), $cell.attr("column"));
+            //window.alert(`Attacked Opponent Square (${$cell.attr("row")}, ${$cell.attr("column")})`);
+            socket.send( JSON.stringify({'cellAttacked': cellObject}) );
         });
     }
 
