@@ -1,46 +1,77 @@
+// ships to be placed by the player. Sent to server on ready signal.
+var ships = {
+    
+    aircraftCarrier: {
+        name: "Aircraft Carrier",
+        length: 5,
+        unplaced: 1,
+        places: []
+    },
 
+    battleship: {
+        name: "Battleship",
+        length: 4,
+        unplaced: 2,
+        places: []
+    },
+
+    cruiser: {
+        name: "Cruiser",
+        length: 3,
+        unplaced: 1,
+        places: []
+    },
+
+    submarine: {
+        name: "Submarine",
+        length: 3,
+        unplaced: 2,
+        places: []
+    },
+
+    destroyer: {
+        name: "Destroyer",
+        length: 2,
+        unplaced: 2,
+        places: []
+    }
+};
 
 var main = function() {
     "use strict";
 
-    // ships to be placed by the player. Sent to server on ready signal.
-    var ships = {
-        
-        aircraftCarrier: {
-            name: "Aircraft Carrier",
-            length: 5,
-            unplaced: 1,
-            places: []
-        },
+    // generate the boards
+    $(".board-parent").append( generateBoard(10, 10) );
 
-        battleship: {
-            name: "Battleship",
-            length: 4,
-            unplaced: 2,
-            places: []
-        },
+    // allow the user to place ships and indicate when they are ready to begin
+    shipPlacement();
+};
 
-        cruiser: {
-            name: "Cruiser",
-            length: 3,
-            unplaced: 1,
-            places: []
-        },
 
-        submarine: {
-            name: "Submarine",
-            length: 3,
-            unplaced: 2,
-            places: []
-        },
+// generate boards made up from divs
+var generateBoard = function(width, height) {
+    var board = $("<div>").addClass("board");
+    board.attr("width", width);
+    board.attr("height", height);
 
-        destroyer: {
-            name: "Destroyer",
-            length: 2,
-            unplaced: 2,
-            places: []
+    var rowDiv;
+    var el;
+    for (let row=0; row<height; row++) {
+        rowDiv = $("<div>").addClass("row");
+        for(let column=0; column<width; column++) {
+            el = $("<div>").addClass("cell");
+            el.attr("row", row);
+            el.attr("column", column);
+            rowDiv.append(el);
         }
-    };
+        board.append(rowDiv);
+    }
+
+    return board;
+}
+    
+
+var shipPlacement = function() {
 
     // function to check if ships are all placed
     var shipsPlaced = function() {
@@ -95,30 +126,6 @@ var main = function() {
         });
     }
 
-    // generate boards made up from divs
-    var generateBoard = function(width, height) {
-        var board = $("<div>").addClass("board");
-        board.attr("width", width);
-        board.attr("height", height);
-
-        var rowDiv;
-        var el;
-        for (let row=0; row<height; row++) {
-            rowDiv = $("<div>").addClass("row");
-            for(let column=0; column<width; column++) {
-                el = $("<div>").addClass("cell");
-                el.attr("row", row);
-                el.attr("column", column);
-                rowDiv.append(el);
-            }
-            board.append(rowDiv);
-        }
-
-        return board;
-    }
-
-    $(".board-parent").append( generateBoard(10, 10) );
-
     // generate ship radio buttons
     for (let key in ships) {
         let ship = ships[key];
@@ -156,13 +163,10 @@ var main = function() {
                     cellArray = cellVerticalArray($cell, ship.length);
                 }
                 
-                console.log(containsShip(cellArray));
                 if (!containsShip(cellArray)) {
                     ship.places.push(cellArray);
                     setShip(cellArray);
                     ship.unplaced -= 1;
-                    console.log(shipKey, ship);
-                    console.log("#ship-pallet #" + shipKey + " .quantity");
                     $("#ship-pallet #" + shipKey + " .quantity").text(ship.unplaced);
                 }
             }
@@ -178,8 +182,37 @@ var main = function() {
             $("#ship-pallet").hide();
             $("#player-board .cell").off('click');
             $("#message").text("Waiting for opponent to be ready...");
+            
+            // start up the web sockets!
+            gameplay();
         }
     }));
-};
+}
+
+var gameplay = function() {
+    // use built-in websocket for mozilla
+    window.WebSocket = window.WebSocket || window.MozWebSocket
+
+    // find location of server to open websocket to
+    var loc = window.location, new_uri;
+    if (loc.protocol === "https:") {
+        new_uri = "wss:";
+    } else {
+        new_uri = "ws:";
+    }
+    new_uri += "//" + loc.host;
+    new_uri += loc.pathname + "/to/ws";
+
+    // open connection to server
+    var connection = new WebSocket(new_uri);
+
+    // function to call when websocket connection is open.
+    connection.onopen = function() {
+        console.log("connection to server opened");
+    }
+
+
+}
+
 
 $(document).ready(main);
