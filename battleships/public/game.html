@@ -6,70 +6,35 @@
     <title>Battleships</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/game.css" />
-    <script src="javascripts/main.js"> </script>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="javascripts/main.js"></script>
 </head>
 
 <body>
     <header>
-        <a href="./splash.html">HOME</a> <!--Creating a menu bar from where the splash screen can be accessed if HOME is pressed-->
+        <a href="/splash">HOME</a>
     </header>
 
     <main>
-        <div>
-        <div class="board" id="player-board"> <!-- Creating a division class called board and 
-            it attributes to player-board (id = player-board) -->
 
-            <div>
-                <div> <!--Vertical grid-->
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-
-                <div> <!-- Horizontal grid-->
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-
-                <div> <!--Diagonal grid-->
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                
-            </div>
-            <h3>Your ships</h3> <!-- Board 2 for the player-->
+        <div class="board-parent" id="player-board">
+            <h3>Your ships</h3>
+        </div>
+        
+        <div id="ship-pallet">
+            <h3>Your ship pallet</h3>
+            <label><input type="checkbox" name="rotate" value=true>Rotate Ship</label>
         </div>
 
-        <div class="board" id="opponent-board">
-            <div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
+        <div class="board-parent" id="opponent-board">
             <h3>The opponent's ships</h3>
         </div>
 
-        <div id="ship-pallet"></div>
-
-        <div id="messages">
-            <p>Message here</p>
+        <div id="message">
+            <p>Place your ships and click "Ready" when you are done.</p>
         </div>
 
-        <button id="play">Play</button>
+        <button id="ready-button">Ready</button>
 
     </main>
 </body>
