@@ -34,7 +34,7 @@ var main = function() {
         for (let row=0; row<height; row++) {
             rowDiv = $("<div>").addClass("row");
             for(let column=0; column<width; column++) {
-                el = $("<div>").addClass("cell");
+                el = $("<div>").addClass("cell").addClass("default");
                 el.attr("row", row);
                 el.attr("column", column);
                 rowDiv.append(el);
@@ -87,7 +87,7 @@ var main = function() {
         // function to set a ship at all cells in the given array.
         var setShip = function(cells) {
             cells.forEach( (cell) => {
-                $(cell).addClass("ship");
+                $(cell).removeClass("default").addClass("ship");
             });
         }
         
@@ -236,6 +236,7 @@ var main = function() {
             // Receive Message: Opponent has been hit
             // test- will be improved
             else if (message.hitOpponentStatus != undefined) {
+                $selectedOppCell.removeClass("default");
                 switch(message.hitOpponentStatus) {
                     case "miss":
                         $selectedOppCell.addClass("miss");
@@ -251,9 +252,8 @@ var main = function() {
             // Receive Message: Player has been hit
             // test- will be improved
             else if (message.hitSelfStatus != undefined) {
-                console.log("Self has been attacked: " + message.hitSelfStatus);
                 let $cellAttacked = $(`#player-board [row="${message.cell.row}"][column="${message.cell.column}"]`);
-                console.log("Cell: " + $cellAttacked);
+                $cellAttacked.removeClass("default");
 
                 switch(message.hitSelfStatus) {
                     case "miss":
