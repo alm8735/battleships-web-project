@@ -114,8 +114,8 @@ Player.prototype.pairWith = function(other) {
 }
 
 // function to send the Ships values to the client.
-Player.prototype.sendShips = function() {
-  var json = JSON.stringify({'ships': this.ships.values});
+Player.prototype.sendInitParams = function() {
+  var json = JSON.stringify({'ships': this.ships.values, 'width':boardWidth, 'height':boardHeight});
   this.ws.send(json);
 }
 
@@ -136,8 +136,8 @@ Player.prototype.sendHitOpponentStatus = function(hitStatus) {
 }
 
 // function to send the status of opponent's last attack on player
-Player.prototype.sendHitSelfStatus = function(hitStatus) {
-  this.ws.send(JSON.stringify({'hitSelfStatus': hitStatus}));
+Player.prototype.sendHitSelfStatus = function(hitStatus, cell) {
+  this.ws.send(JSON.stringify({'hitSelfStatus': hitStatus, 'cell': cell}));
 }
 
 // dictionary pairing ids to players
@@ -145,6 +145,8 @@ var players = {};
 
 // variable to store a waiting player
 var waitingPlayer = null;
+
+var boardWidth = 10; var boardHeight = 10;
 
 //////////////////////// Port, HTTP and Express Setup /////////////////////////
 
@@ -181,7 +183,7 @@ wsServer.on('connection', function(ws) {
   players[newID] = newPlayer;
 
   // Send player ships to client
-  newPlayer.sendShips();
+  newPlayer.sendInitParams();
 
   ///////////////// Messages from Client to Sever////////////////
   ws.on("message", function incoming(event) {
@@ -228,7 +230,7 @@ wsServer.on('connection', function(ws) {
         var hitStatus = player.opponent.ships.attackCell(message.cellAttacked);
         console.log(hitStatus);
         player.sendHitOpponentStatus(hitStatus);
-        player.opponent.sendHitSelfStatus(hitStatus);
+        player.opponent.sendHitSelfStatus(hitStatus, message.cellAttacked);
 
         // swap which player's turn it is and start next turn
         player.turn = !player.turn;

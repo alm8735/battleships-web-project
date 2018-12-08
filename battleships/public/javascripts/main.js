@@ -45,9 +45,6 @@ var main = function() {
         return board;
     }
 
-    // generate the boards
-    $(".board-parent").append( generateBoard(10, 10) );
-
     // Processing to set ship positions
     var placeShips = function() {
 
@@ -141,8 +138,6 @@ var main = function() {
         });
     }
 
-    placeShips();
-
     ////////////////////// WebSocket Initialization ////////////////////
 
     // use built-in websocket for mozilla
@@ -198,10 +193,10 @@ var main = function() {
         
         if (playerTurn) {
             $("#message p").text("Choose an opponent square to attack");
-            enableOpponentSquare();
+            enableOpponentBoard();
         } else {
             $("#message p").text("Opponent's turn...");
-            disableOpponentSquare();
+            disableOpponentBoard();
         }
     }
 
@@ -214,10 +209,14 @@ var main = function() {
 
         if (message) {
             
-            // Receive Message: Player Ships
+            // Receive Message: Game Init Variables
             if (message.ships != undefined) {
                 ships = message.ships;
                 generateRadioButtons();
+                // generate the boards
+                $(".board-parent").append( generateBoard(message.width, message.height) );
+                // allow user to place ships
+                placeShips();
             }
 
             // Receive Message: Ready Request Response
@@ -237,8 +236,6 @@ var main = function() {
             // Receive Message: Opponent has been hit
             // test- will be improved
             else if (message.hitOpponentStatus != undefined) {
-                $selectedOppCell.addClass("attacked");
-
                 switch(message.hitOpponentStatus) {
                     case "miss":
                         $selectedOppCell.addClass("miss");
@@ -254,17 +251,19 @@ var main = function() {
             // Receive Message: Player has been hit
             // test- will be improved
             else if (message.hitSelfStatus != undefined) {
-                $selectedOppCell.addClass("attacked");
+                console.log("Self has been attacked: " + message.hitSelfStatus);
+                let $cellAttacked = $(`#player-board [row="${message.cell.row}"][column="${message.cell.column}"]`);
+                console.log("Cell: " + $cellAttacked);
 
-                switch(message.hitOpponentStatus) {
+                switch(message.hitSelfStatus) {
                     case "miss":
-                        $selectedOppCell.addClass("miss");
+                        $cellAttacked.addClass("miss");
                         break;
                     case "obliterated":
-                        console.log("Opponent obliterated!!");
+                        console.log("You have been defeated.");
                     case "hit":
                     case "sunk":
-                        $selectedOppCell.addClass("hit");
+                        $cellAttacked.addClass("hit");
                 }
             }
         }
@@ -280,17 +279,21 @@ var main = function() {
         socket.send( JSON.stringify({'ships': ships}) );
     }));
 
-    function enableOpponentSquare() {
+    function enableOpponentBoard() {
         $("#opponent-board .cell").click((event) => {
             var $cell = $(event.currentTarget);
-            $selectedOppCell = $cell;
-            var cellObject = new Cell($cell.attr("row"), $cell.attr("column"));
-            //window.alert(`Attacked Opponent Square (${$cell.attr("row")}, ${$cell.attr("column")})`);
-            socket.send( JSON.stringify({'cellAttacked': cellObject}) );
+            //don't bother sending request if cell has already been attacked
+            if (!$cell.hasClass("miss") && !$cell.hasClass("hit")) {
+                $selectedOppCell = $cell;
+                var cellObject = new Cell($cell.attr("row"), $cell.attr("column"));
+                //window.alert(`Attacked Opponent Square (${$cell.attr("row")}, ${$cell.attr("column")})`);
+                socket.send( JSON.stringify({'cellAttacked': cellObject}) );
+            }
         });
     }
 
-    function disableOpponentSquare() {
+    // set opponent cells to do nothing when clicked
+    function disableOpponentBoard() {
         $("#opponent-board .cell").off('click');
     }
 };
