@@ -1,41 +1,45 @@
-<!DOCTYPE <!DOCTYPE html>
+<!DOCTYPE <!DOCTYPE html> 
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" /> <!--Character-set is specified to the unicode of "utf-8" which is all universal characters-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!--  -->
     <title>Battleships</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/game.css" />
-    <script src="javascripts/main.js"></script>
+    <script src="javascripts/main.js"> </script>
 </head>
-<body>
 
+<body>
     <header>
-        <a href="./splash.html">HOME</a>
+        <a href="./splash.html">HOME</a> <!--Creating a menu bar from where the splash screen can be accessed if HOME is pressed-->
     </header>
 
     <main>
-
         <div>
-        <div class="board" id="player-board">
+        <div class="board" id="player-board"> <!-- Creating a division class called board and 
+            it attributes to player-board (id = player-board) -->
+
             <div>
-                <div>
+                <div> <!--Vertical grid-->
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
-                <div>
+
+                <div> <!-- Horizontal grid-->
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
-                <div>
+
+                <div> <!--Diagonal grid-->
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
+                
             </div>
-            <h3>Your ships</h3>
+            <h3>Your ships</h3> <!-- Board 2 for the player-->
         </div>
 
         <div class="board" id="opponent-board">
@@ -68,7 +72,6 @@
         <button id="play">Play</button>
 
     </main>
-
 </body>
 </html>
 
