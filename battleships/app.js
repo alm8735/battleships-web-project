@@ -183,6 +183,8 @@ var wsServer = new websocket.Server({ server });
 
 wsServer.on('connection', function(ws) {
   
+  console.log("websocket open");
+
   // Set websocket to a Player object with a unique ID
   //var newID = guidGenerator();
   //ws.id = newID;
@@ -207,6 +209,7 @@ wsServer.on('connection', function(ws) {
 
         // If player is ready, try to pair player or set player to wait.
         if (readyAccepted) {
+          player.ready = true;
 
           // replace default ship values with placed ship values
           player.ships.values = message.ships;
@@ -247,9 +250,24 @@ wsServer.on('connection', function(ws) {
 
      }
 
-     // how to close websocket when browser closed???
+     // [Experimental code for disconnecting from a game]
      ws.on("close", function () {
-      console.log("WebSocket closed.");
+      console.log("WebSocket closed.", player);
+
+      // check if player was ready
+      if (player.ready) {
+        // if the player was playing with an opponent
+        if (player.opponent) {
+          // [Terminate game code here]
+          player.opponent.opponent = null;
+        } else {
+          // If this player was ready but not playing, they were waiting
+          // so set waiting player to null
+          waitingPlayer = null;
+        }
+      }
+
+      ws.on("message", () => {});
      });
 
   });
