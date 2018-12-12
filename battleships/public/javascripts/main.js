@@ -5,12 +5,11 @@ var main = function() {
     ////////////////////// WebSocket Initialization ////////////////////
 
     // use built-in websocket for mozilla
-    window.WebSocket = window.WebSocket || window.MozWebSocket
+    window.WebSocket = window.WebSocket || window.MozWebSocket;
 
     // find location of server to open websocket
-    var loc = window.location, new_uri;
-    new_uri = "ws://" + loc.host;
-    new_uri += loc.pathname + "/to/ws";
+    var new_uri = "ws://" + window.location.host;
+    new_uri += window.location.pathname + "/to/ws";
 
     // open connection to server
     var socket = new WebSocket(new_uri);
@@ -18,7 +17,7 @@ var main = function() {
     // function to call when websocket connection is open.
     socket.onopen = function() {
         console.log("connection to server opened");
-    }
+    };
 
     //////////////// Module: Client-Side Data for Gameplay ///////////////
     var gameDataModule = ( function() {
@@ -27,7 +26,7 @@ var main = function() {
         var board = {
             width: 0,
             height: 0,
-        }
+        };
         
         // data about player ships - initial value fetched from server
         var ships = {};
@@ -42,16 +41,17 @@ var main = function() {
             // public object to encapsulate board
             gameBoard: {
                 setSize: function(width, height) {
-                    board.width = width, board.height = height;
+                    board.width = width;
+                  	board.height = height;
                 },
-                getWidth: () => {return board.width},
-                getHeight: () => {return board.height}
+                getWidth: () => {return board.width;},
+                getHeight: () => {return board.height;}
             },
             
             // ship manipulation
-            getShips: () => {return ships},
+            getShips: () => {return ships;},
 
-            setShips: (newShips) => {ships = newShips},
+            setShips: (newShips) => {ships = newShips;},
 
             forEachShipKey: function(callback) {
                 for (let key in ships) {
@@ -59,8 +59,8 @@ var main = function() {
                 }
             },
 
-            getShip: (key) => {return ships[key]},
-        }
+            getShip: (key) => {return ships[key];},
+        };
     })();
 
     ////////////// Module: Sending Messages to Server ///////////////////
@@ -79,7 +79,7 @@ var main = function() {
             playerReady: function() {
                 socket.send( JSON.stringify({"ships": gameData.getShips() }) );
             }
-        }
+        };
     })(socket, gameDataModule);
 
     //////////////// Module: Game State Variables and Functions ////////////////
@@ -97,23 +97,29 @@ var main = function() {
             },
 
             // modify a cell when attacked depending on the consequence of the attack
-            handleCellAttacked: function($cell, status, onSunk, onObliterated) {
+            handleCellAttacked: function($cell, status, onMiss, onHit, onSunk, onObliterated) {
                 $cell.removeClass("default");
-                switch(status) {
-                    case "miss":
-                        $cell.addClass("miss");
-                        break;
-                    case "obliterated":
-                        onObliterated();
-                    case "sunk":
-                        onSunk();
-                    case "hit":
-                        $cell.addClass("hit");
+
+                if (status.hit) {
+                    $cell.addClass("hit");
+                    onHit(status.shipKey);
+
+                    if (status.sunk) {
+                        onSunk(status.shipKey);
+                        if (status.obliterated) {
+                            onObliterated(status.shipKey);
+                        }
+                    }
+                }
+
+                else {
+                    $cell.addClass("miss");
+                    onMiss();
                 }
             },
 
-            handleOppCellAttacked: function(status, onSunk, onObliterated) {
-                this.handleCellAttacked($selectedOppCell, status, onSunk, onObliterated);
+            handleOppCellAttacked: function(status, onMiss, onHit, onSunk, onObliterated) {
+                this.handleCellAttacked($selectedOppCell, status, onMiss, onHit, onSunk, onObliterated);
             },
 
             // function to set everything to ready-to-start status
@@ -166,7 +172,7 @@ var main = function() {
                     $("#opponent-board .cell").off("click");
                 }
             }
-        }
+        };
     })(sendToServerModule);
 
     ////////////////// Module: Domain Object Model Setup /////////////////////
@@ -201,7 +207,7 @@ var main = function() {
             shipRadioButtons: () => {
                 gameData.forEachShipKey((key) => {
                     let ship = gameData.getShip(key);
-                    let input = $("<input>")
+                    let input = $("<input>");
                     input.attr("type", "radio").attr("name", "ships").attr("value", key);
 
                     let label = $("<label>").attr("id", key);
@@ -209,9 +215,9 @@ var main = function() {
                     label.append(" (<span class=quantity>" + ship.unplaced + "</span>) ");
 
                     $("#ship-pallet").append(label);
-                })
+                });
             }
-        }
+        };
     })(gameDataModule);
 
     ///////////////// Module: Ship Placement by Player ////////////////
@@ -228,7 +234,7 @@ var main = function() {
                 $cell = $cell.next();
             }
             return cells;
-        }
+        };
     
         // constructs an array of cells from cell to cell + vertical steps
         var cellVerticalArray = function($cell, steps) {
@@ -239,11 +245,11 @@ var main = function() {
                 cells.push($cell[0]);
     
                 $row = $row.next();
-                $cell = $row.children("[column='" + $cell.attr("column") + "']")
+                $cell = $row.children("[column='" + $cell.attr("column") + "']");
             }
     
             return cells;
-        }
+        };
     
         // function to check if one or more cells in an array contain a ship.
         var containsShip = function(cells) {
@@ -253,14 +259,14 @@ var main = function() {
                 }
             }
             return false;
-        }
+        };
     
         // function to set a ship at all cells in the given array.
         var setShip = function(cells) {
             cells.forEach( (cell) => {
                 $(cell).removeClass("default").addClass("ship");
             });
-        }
+        };
         
         // function to construct an array of Cell objects from an array of cell DOM elements
         var toCellObjectArray = function(DOMCells) {
@@ -272,12 +278,13 @@ var main = function() {
                 cellObjects.push(new gameData.Cell(row, column));
             }));
             return cellObjects;
-        }
+        };
         
         return {
             placePlayerShips: function() {
                 // add a ship to the player board when the board is clicked
                 $("#player-board .cell").click((event) => {
+
                     let $cell = $(event.currentTarget);
                     let shipKey = $("#ship-pallet input[name=ships]:checked").val();
                     let rotated = $("#ship-pallet input[name=rotate]:checked").val();
@@ -287,10 +294,13 @@ var main = function() {
                     if (ship && ship.unplaced > 0) {
             
                         // ensure ship fits horizontally or vertically
-                        var horizontalFit = !rotated 
-                            && ( Number($cell.attr("column")) + ship.length ) <= gameData.gameBoard.getWidth();
-                        var verticalFit = rotated 
-                            && ( Number($cell.attr("row")) + ship.length ) <= gameData.gameBoard.getHeight();
+                        var horizontalFit = !rotated && 
+                  					( Number($cell.attr("column")) + ship.length ) <=
+                            gameData.gameBoard.getWidth();
+                            
+                        var verticalFit = rotated && 
+                  					( Number($cell.attr("row")) + ship.length ) <=
+                  					gameData.gameBoard.getHeight();
             
                         if (horizontalFit || verticalFit) {
             
@@ -312,7 +322,7 @@ var main = function() {
                     }
                 });
             }
-        }
+        };
     })(gameDataModule);
 
     ////////////////// Recieving Messages from Server ////////////////
@@ -351,22 +361,29 @@ var main = function() {
                 gameStateModule.nextTurn(message.yourTurn);
             }
 
+            // Note: replace with on-screen messages
             // Receive Message: Opponent has been hit
             else if (message.hitOpponentStatus != undefined) {
                 gameStateModule.handleOppCellAttacked(message.hitOpponentStatus,
-                    () => {console.log("You sunk an opponent ship!")},
-                    () => {console.log("Your opponent has been obliterated!!")});
+                    () => {console.log("You missed the opponent ships.")},
+                    (key) => {console.log("You hit the opponent's " + gameDataModule.getShip(key).name + "!")},
+                    (key) => {console.log("You sunk the opponent's " + gameDataModule.getShip(key).name + "!");},
+                    (key) => {console.log("Your opponent has been obliterated!!");});
             }
 
             // Receive Message: Player has been hit
             else if (message.hitSelfStatus != undefined) {
-                let $cellAttacked = $(`#player-board [row="${message.cell.row}"][column="${message.cell.column}"]`);
+                let $cellAttacked = $(
+                    `#player-board [row="${message.cell.row}"][column="${message.cell.column}"]`
+                );
                 gameStateModule.handleCellAttacked($cellAttacked, message.hitSelfStatus, 
-                    () => {console.log("Your ship has been sunk")},
-                    () => {console.log("You have been defeated.")});
+                    () => {console.log("Opponent missed your ships.");},
+                    (key) => {console.log("Your " + gameDataModule.getShip(key).name + " has been hit!");},
+                    (key) => {console.log("Your " + gameDataModule.getShip(key).name + " has been sunk.");},
+                    (key) => {console.log("You have been defeated.");});
             }
         }
-    }
+    };
 };
 
 $(document).ready(main);

@@ -74,6 +74,8 @@ Ships.prototype.cellsEmpty = function() {
 // returns "hit" if the cell was located, "sunk" if the cell was the last 
 // of an array, "obliterated" if the cell was the last remaining, or "miss" otherwise
 Ships.prototype.attackCell = function(cell) {
+  var result = {hit: false};
+
   for (let key in this.values) {
     let shipType = this.values[key];
 
@@ -81,21 +83,28 @@ Ships.prototype.attackCell = function(cell) {
       for (let j=0; j<shipType.cells[i].length; j++) {
 
         if ( equalCells(cell, shipType.cells[i][j]) ) {
+          // Found a match for the cell in ships! Remove cell
           shipType.cells[i].splice(j, 1);
-
+          
+          // Now check if ship sunk
           if (shipType.cells[i].length === 0) {
             shipType.cells.splice(i, 1);
+            // Check if oppoenent obliterated
             if (this.cellsEmpty())
-              return "obliterated";
-            return "sunk";
+              result.obliterated = true;
+            result.sunk = true;
           }
-          return "hit";
+          // return hit result
+          result.hit = true;
+          result.shipKey = key;
+          return result;
         }
 
       }
     }
   }
-  return "miss";
+  // return a miss if there are no matches
+  return result;
 }
 
 // "class" for a player object.
@@ -141,7 +150,7 @@ Player.prototype.sendHitSelfStatus = function(hitStatus, cell) {
 }
 
 // dictionary pairing ids to players
-var players = {};
+//var players = {};
 
 // variable to store a waiting player
 var waitingPlayer = null;
@@ -155,13 +164,11 @@ var app = express();
 
 app.use(express.static(__dirname + "/public"));
 
-var server = http.createServer(app);
-
 // create and open http server
 var server = http.createServer(app);
 
 // basic express routes
-app.get("/splash", (req, res, next) => {
+app.get("/home(page)?", (req, res, next) => {
   res.sendFile("splash.html", {root: "./public"});
 });
 
@@ -177,25 +184,24 @@ var wsServer = new websocket.Server({ server });
 wsServer.on('connection', function(ws) {
   
   // Set websocket to a Player object with a unique ID
-  var newID = guidGenerator();
-  ws.id = newID;
-  var newPlayer = new Player(ws);
-  players[newID] = newPlayer;
+  //var newID = guidGenerator();
+  //ws.id = newID;
+  var player = new Player(ws);
+  //players[newID] = player;
 
   // Send player ships to client
-  newPlayer.sendInitParams();
+  player.sendInitParams();
 
   ///////////////// Messages from Client to Sever////////////////
   ws.on("message", function incoming(event) {
-    var player = players[ws.id];
-
-     // assume message is a JSON (rather low security)
+     // assume message is a JSON
      var message = JSON.parse(event);
     
      if (message) {
 
       // Message Recieved: Request for Player Ready status
       if (message.ships != undefined) {
+        // Ensure ships have all been placed and not tampered with
         let readyAccepted = player.ships.validPlacedMatch(message.ships);
         player.respondReadyRequest(readyAccepted);
 
@@ -207,19 +213,19 @@ wsServer.on('connection', function(ws) {
 
           // Start a new game between waiting player and new player
           if (waitingPlayer) {
-            newPlayer.pairWith(waitingPlayer);
+            player.pairWith(waitingPlayer);
 
             let isNewPlayerTurn = firstPlayerTurn();
-            newPlayer.turn = isNewPlayerTurn;
+            player.turn = isNewPlayerTurn;
             waitingPlayer.turn = !isNewPlayerTurn;
 
-            newPlayer.sendNextTurnMessage();
+            player.sendNextTurnMessage();
             waitingPlayer.sendNextTurnMessage();
             waitingPlayer = null;
           
           // if no player is waiting, this player has to wait
           } else {
-            waitingPlayer = newPlayer;
+            waitingPlayer = player;
           }
         }
       }
@@ -239,7 +245,12 @@ wsServer.on('connection', function(ws) {
         player.opponent.sendNextTurnMessage();
       }
 
-     } 
+     }
+
+     // how to close websocket when browser closed???
+     ws.on("close", function () {
+      console.log("WebSocket closed.");
+     });
 
   });
 });

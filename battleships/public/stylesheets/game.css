@@ -1,13 +1,15 @@
 header {
     background:grey;
-    min-height:30px;
+    min-height:40px;
+}
+
+main {
+    text-align: center;
 }
 
 .board-parent{
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    display: inline-block;
+    padding: 10px;
 }
 
 .row {
@@ -15,8 +17,8 @@ header {
 }
 
 .cell {
-    min-height:30px;
-    min-width:30px;
+    min-height:40px;
+    min-width:40px;
     float:left;
 }
 
