@@ -38,12 +38,16 @@ main {
     background-color: rgb(82, 52, 01);
 }
 
+.adjacent {
+    background-color:rgba(157, 207, 255, 0.61);
+}
+
 .hit {
     background-color: rgb(168, 0, 0);
 }
 
 .miss {
-    background-color: rgb(240, 239, 239);
+    background-color: rgb(255, 221, 221);
 }
 
 
