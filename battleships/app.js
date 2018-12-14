@@ -63,7 +63,6 @@ Fleet.prototype.validPlacedMatch = function(other) {
 
     // ensure ships in squadron have correct length
     for (let i=0; i<thisSquadron.ships.length; i++) {
-      console.log(otherSquadron.ships[i]);
       if (otherSquadron.ships[i].cells.length !== thisSquadron.shipLength) {
         return false;
       }
@@ -86,7 +85,12 @@ Fleet.prototype.cellsEmpty = function() {
 // returns "hit" if the cell was located, "sunk" if the cell was the last 
 // of an array, "obliterated" if the cell was the last remaining, or "miss" otherwise
 Fleet.prototype.attackCell = function(cell) {
-  var result = {hit: false};
+  var result = {
+    hit: false, 
+    sunk: false, 
+    obliterated:false,
+    shipKey: undefined,
+    adjacentCells: undefined};
 
   for (let key in this.values) {
     let squadron = this.values[key], ship;
@@ -108,6 +112,7 @@ Fleet.prototype.attackCell = function(cell) {
               result.obliterated = true;
             }
             result.sunk = true;
+            result.adjacentCells = ship.adjacentCells;
           }
           // return hit result
           result.hit = true;
@@ -261,6 +266,15 @@ wsServer.on('connection', function(ws) {
         player.opponent.turn = !player.opponent.turn;
         player.sendNextTurnMessage();
         player.opponent.sendNextTurnMessage();
+
+        if (hitStatus.obliterated) {
+          player.sendInitParams();
+          player.opponent.sendInitParams();
+          player.ready = false;
+          player.opponent.ready = false;
+          player.opponent.opponent = null;
+          player.opponent = null;
+        }
       }
 
      }

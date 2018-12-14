@@ -38,9 +38,9 @@ var main = function() {
             },
 
             // A basic player Ship object
-            Ship: function(cells) {
+            Ship: function(cells, adjCells) {
                 this.cells = cells;
-                this.adjacentCells = [];
+                this.adjacentCells = adjCells;
             },
 
             // public object to encapsulate board
@@ -68,120 +68,7 @@ var main = function() {
         };
     })();
 
-    ////////////// Module: Sending Messages to Server ///////////////////
-
-    // Requires the Web Socket and gameData (for ships)
-    var sendToServerModule = ( function(socket, gameData) {
-        return {
-
-            // send a Cell to the server to represent the player's move
-            attackOpponentCell: function($cell) {
-                var cellObject = new gameData.Cell($cell.attr("row"), $cell.attr("column"));
-                socket.send( JSON.stringify({"cellAttacked": cellObject}) );
-            },
-            
-            // send the ships to the server to indicate that the player is ready
-            playerReady: function() {
-                socket.send( JSON.stringify({"ships": gameData.getFleet() }) );
-            }
-        };
-    })(socket, gameDataModule);
-
-    //////////////// Module: Game State Variables and Functions ////////////////
-
-    // Requires sendToServer module for enabling Ready button and attacking opponent board
-    var gameStateModule = ( function (sendToServer) {
-
-        // most recent cell selected on the opponent board
-        var $selectedOppCell;
-        return {
-
-            // opponent cell selected by player
-            selectOppCell: function($cell) {
-                $selectedOppCell = $cell;
-            },
-
-            // modify a cell when attacked depending on the consequence of the attack
-            handleCellAttacked: function($cell, status, onMiss, onHit, onSunk, onObliterated) {
-                $cell.removeClass("default");
-
-                if (status.hit) {
-                    $cell.addClass("hit");
-                    onHit(status.shipKey);
-
-                    if (status.sunk) {
-                        onSunk(status.shipKey);
-                        if (status.obliterated) {
-                            onObliterated(status.shipKey);
-                        }
-                    }
-                }
-
-                else {
-                    $cell.addClass("miss");
-                    onMiss();
-                }
-            },
-
-            handleOppCellAttacked: function(status, onMiss, onHit, onSunk, onObliterated) {
-                this.handleCellAttacked($selectedOppCell, status, onMiss, onHit, onSunk, onObliterated);
-            },
-
-            // function to set everything to ready-to-start status
-            setPlayerReady: function() {
-                this.readyButtonEnabled(false);
-                $("#ship-pallet").hide();
-                $("#player-board .cell").off("click");
-                $("#message p").text("Waiting for another player...");
-            },
-
-            // function to inform the player if the ready request was denied
-            onReadyRequestDenied: function() {
-                window.alert("Have you placed all your ships?");
-            },
-
-            // function to indicate the start of the next turn
-            nextTurn: function(myTurn) {        
-                if (myTurn) {
-                    $("#message p").text("Choose an opponent square to attack");
-                    this.attackEnabled(true);
-                } else {
-                    $("#message p").text("Opponent's turn...");
-                    this.attackEnabled(false);
-                }
-            },
-
-            // function to set the enable of the ready button
-            readyButtonEnabled: function(value) {
-                if (value) {
-                    $("#ready-button").show().click((event) => {
-                        sendToServer.playerReady();
-                    });
-                } else {
-                    $("#ready-button").hide().off("click");
-                }
-            },
-
-            // function to set the enable of attacking the opponent 
-            attackEnabled: function(value) {
-                if (value) {
-                    $("#opponent-board .cell").click((event) => {
-                        console.log("clicked enemy board");
-                        var $cell = $(event.currentTarget);
-                        //don't bother sending request if cell has already been attacked
-                        if (!$cell.hasClass("miss") && !$cell.hasClass("hit")) {
-                            this.selectOppCell($cell);
-                            sendToServer.attackOpponentCell( $(event.currentTarget) );
-                        }
-                    });
-                } else {
-                    $("#opponent-board .cell").off("click");
-                }
-            }
-        };
-    })(sendToServerModule);
-
-    ////////////////// Module: Domain Object Model Setup /////////////////////
+        ////////////////// Module: Domain Object Model Setup /////////////////////
 
     // relies on gameData Module for ships
     var generateDOMModule = (function (gameData) {
@@ -225,6 +112,121 @@ var main = function() {
             }
         };
     })(gameDataModule);
+
+    ////////////// Module: Sending Messages to Server ///////////////////
+
+    // Requires the Web Socket and gameData (for ships)
+    var sendToServerModule = ( function(socket, gameData) {
+        return {
+
+            // send a Cell to the server to represent the player's move
+            attackOpponentCell: function($cell) {
+                var cellObject = new gameData.Cell($cell.attr("row"), $cell.attr("column"));
+                socket.send( JSON.stringify({"cellAttacked": cellObject}) );
+            },
+            
+            // send the ships to the server to indicate that the player is ready
+            playerReady: function() {
+                socket.send( JSON.stringify({"ships": gameData.getFleet() }) );
+            }
+        };
+    })(socket, gameDataModule);
+
+    //////////////// Module: Game State Variables and Functions ////////////////
+
+    // Requires sendToServer module for enabling Ready button and attacking opponent board
+    var gameStateModule = ( function (sendToServer) {
+
+        // most recent cell selected on the opponent board
+        var $selectedOppCell;
+        return {
+
+            // function to set everything to ready-to-start status
+            setPlayerReady: function() {
+                this.readyButtonEnabled(false);
+                $("#ship-pallet").hide();
+                $("#player-board .cell").off("click");
+                $("#main-message").text("Waiting for another player...");
+            },
+
+            // function to inform the player if the ready request was denied
+            onReadyRequestDenied: function() {
+                window.alert("Have you placed all your ships?");
+            },
+
+            // function to indicate the start of the next turn
+            nextTurn: function(myTurn) {        
+                if (myTurn) {
+                    $("#main-message").text("Choose an opponent square to attack");
+                    this.attackEnabled(true);
+                } else {
+                    $("#main-message").text("Opponent's turn...");
+                    this.attackEnabled(false);
+                }
+            },
+
+            // function to set the enable of the ready button
+            readyButtonEnabled: function(value) {
+                if (value) {
+                    $("#ready-button").show().click((event) => {
+                        sendToServer.playerReady();
+                    });
+                } else {
+                    $("#ready-button").hide().off("click");
+                }
+            },
+
+            // function to set the enable of attacking the opponent 
+            attackEnabled: function(value) {
+                if (value) {
+                    $("#opponent-board .cell").click((event) => {
+                        console.log("clicked enemy board");
+                        var $cell = $(event.currentTarget);
+                        //don't bother sending request if cell has already been attacked
+                        if (!$cell.hasClass("miss") && !$cell.hasClass("hit")) {
+                            this.selectOppCell($cell);
+                            sendToServer.attackOpponentCell( $(event.currentTarget) );
+                        }
+                    });
+                } else {
+                    $("#opponent-board .cell").off("click");
+                }
+            },
+
+            // opponent cell selected by player
+            selectOppCell: function($cell) {
+                $selectedOppCell = $cell;
+            },
+
+            // modify a cell when attacked depending on the consequence of the attack
+            handleCellAttacked: function($cell, status, onMiss, onHit, onSunk, onObliterated) {
+                var $adjCell;
+
+                $cell.removeClass("default");
+
+                if (status.hit) {
+                    $cell.addClass("hit");
+                    onHit(status.shipKey);
+
+                    if (status.sunk) {
+                        onSunk(status.shipKey);
+                        if (status.obliterated) {
+                            onObliterated(status.shipKey);
+                        }
+                    }
+                }
+
+                else {
+                    $cell.addClass("miss");
+                    onMiss();
+                }
+            },
+
+            handleOppCellAttacked: function(status, onMiss, onHit, onSunk, onObliterated) {
+                this.handleCellAttacked($selectedOppCell, status, onMiss, onHit, onSunk, onObliterated);
+            }
+        };
+    })(sendToServerModule);
 
     ///////////////// Module: Ship Placement by Player ////////////////
 
@@ -292,7 +294,6 @@ var main = function() {
 
             // return if final index is out of range
             if (firstIdx + shipLength > boardLength) {
-                console.log("hi");
                 return null;
             }
 
@@ -387,7 +388,9 @@ var main = function() {
                         // ensure the arrays are valid
                         if (cellArrays) {
                             // add the new ship in data and in HTML
-                            newShip = new gameData.Ship( toCellObjectArray(cellArrays.ship) );
+                            newShip = new gameData.Ship( 
+                                toCellObjectArray(cellArrays.ship),
+                                toCellObjectArray(cellArrays.adj));
                             squadron.ships.push(newShip);
                             setToShipCells(cellArrays.ship);
                             setToShipAdjCells(cellArrays.adj);
@@ -410,18 +413,28 @@ var main = function() {
         // assume that message is a JSON string
         var message = JSON.parse(event.data);
 
+        var $hitOppMessage = $("#hit-opp-message"),
+            $hitSelfMessage = $("#hit-self-message"), 
+            $cellAttacked;
+
         if (message) {
             
             // Receive Message: Game Init Variables
             if (message.ships != undefined) {
                 gameDataModule.setFleet(message.ships);
+                $('#ship-pallet [name="ships"]').remove();
                 generateDOMModule.shipRadioButtons();
+                $("#ship-pallet").show();
                 // generate the boards
+                $(".board").remove();
                 $(".board-parent").append( generateDOMModule.board(message.width, message.height) );
                 gameDataModule.gameBoard.setSize(message.width, message.height);
                 // allow user to place ships
                 shipPlacementModule.placePlayerShips();
                 gameStateModule.readyButtonEnabled(true);
+                $("#hit-self-message").text("");
+                $("#hit-opp-message").text("");
+                $("#main-message").text('Place your ships and click "Ready" when you are done.');
             }
 
             // Receive Message: Ready Request Response
@@ -438,26 +451,49 @@ var main = function() {
                 gameStateModule.nextTurn(message.yourTurn);
             }
 
-            // Note: replace with on-screen messages
             // Receive Message: Opponent has been hit
             else if (message.hitOpponentStatus != undefined) {
                 gameStateModule.handleOppCellAttacked(message.hitOpponentStatus,
-                    () => {console.log("You missed the opponent ships.")},
-                    (key) => {console.log("You hit the opponent's " + gameDataModule.getSquadron(key).name + "!")},
-                    (key) => {console.log("You sunk the opponent's " + gameDataModule.getSquadron(key).name + "!");},
-                    (key) => {console.log("Your opponent has been obliterated!!");});
+                    () => {
+                        $hitOppMessage.text("You missed the opponent ships.");
+                    },
+                    () => {
+                        $hitOppMessage.text("You hit an opponent ship!");
+                    },
+                    (key) => {
+                        $hitOppMessage.text("You sunk the opponent's " + gameDataModule.getSquadron(key).name + "!");
+                        message.hitOpponentStatus.adjacentCells.forEach((cellObj) => {
+                            let $c = $(`#opponent-board [row="${cellObj.row}"][column="${cellObj.column}"]`);
+                            $c.addClass("miss");
+                        });
+                    },
+                    () => {
+                        window.alert("Congratulations, you won!");
+                });
             }
 
             // Receive Message: Player has been hit
             else if (message.hitSelfStatus != undefined) {
-                let $cellAttacked = $(
+                $cellAttacked = $(
                     `#player-board [row="${message.cell.row}"][column="${message.cell.column}"]`
                 );
                 gameStateModule.handleCellAttacked($cellAttacked, message.hitSelfStatus, 
-                    () => {console.log("Opponent missed your ships.");},
-                    (key) => {console.log("Your " + gameDataModule.getSquadron(key).name + " has been hit!");},
-                    (key) => {console.log("Your " + gameDataModule.getSquadron(key).name + " has been sunk.");},
-                    (key) => {console.log("You have been defeated.");});
+                    () => {
+                        $hitSelfMessage.text("The opponent missed your ships.");
+                    },
+                    (key) => {
+                        $hitSelfMessage.text("Your " + gameDataModule.getSquadron(key).name + " has been hit!");
+                    },
+                    (key) => {
+                        $hitSelfMessage.text("Your " + gameDataModule.getSquadron(key).name + " has been sunk.");
+                        message.hitSelfStatus.adjacentCells.forEach((cellObj) => {
+                            let $c = $(`#player-board [row="${cellObj.row}"][column="${cellObj.column}"]`);
+                            $c.addClass("miss");
+                        });
+                    },
+                    () => {
+                        window.alert("You have been defeated.");
+                });
             }
         }
     };

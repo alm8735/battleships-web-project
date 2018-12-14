@@ -35,7 +35,7 @@ main {
 }
 
 .ship {
-    background-color: rgb(82, 52, 01);
+    background-color: rgb(107, 64, 1);
 }
 
 .adjacent {
@@ -47,7 +47,7 @@ main {
 }
 
 .miss {
-    background-color: rgb(255, 221, 221);
+    background-color: rgb(253, 252, 252);
 }
 
 
