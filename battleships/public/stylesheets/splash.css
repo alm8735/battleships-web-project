@@ -15,8 +15,8 @@ img {
   margin-right: auto;
 }
 
-a:hover, a:active {
-    background-color: yellow;
+  a:hover, a:active {
+  background-color: yellow;
 }
 
 h3 {
