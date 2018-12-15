@@ -17,8 +17,16 @@
 
     <main>
 
-        <div class="board-parent" id="player-board">
-            <h3>Your ships</h3>
+        <div id="boards">
+
+            <div class="board-parent" id="player-board">
+                <h3>Your ships</h3>
+            </div>
+
+            <div class="board-parent" id="opponent-board">
+                <h3>The opponent's ships</h3>
+            </div>
+
         </div>
         
         <div id="ship-pallet">
@@ -26,12 +34,11 @@
             <label><input type="checkbox" name="rotate" value=true>Rotate Ship</label>
         </div>
 
-        <div class="board-parent" id="opponent-board">
-            <h3>The opponent's ships</h3>
-        </div>
 
         <div id="message">
-            <p>Place your ships and click "Ready" when you are done.</p>
+            <p id="hit-opp-message"></p>
+            <p id="hit-self-message"></p>
+            <p id="main-message">Place your ships and click "Ready" when you are done.</p>
         </div>
 
         <button id="ready-button">Ready</button>

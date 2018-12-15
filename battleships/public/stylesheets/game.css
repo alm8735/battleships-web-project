@@ -1,13 +1,20 @@
 header {
     background:grey;
-    min-height:30px;
+    min-height:40px;
+}
+
+main {
+    text-align: center;
 }
 
 .board-parent{
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    display: inline-block;
+    padding: 10px;
+}
+
+.board {
+    border-style: solid;
+    border-width: 2px;
 }
 
 .row {
@@ -15,24 +22,36 @@ header {
 }
 
 .cell {
-    min-height:30px;
-    min-width:30px;
+    min-height:40px;
+    min-width:40px;
     float:left;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.default {
+    background-color:rgba(109, 184, 255, 0.61);
+    border-color: rgba(0, 0, 0, 0.493);
 }
 
 .ship {
-    background-color: grey;
+    background-color: rgb(107, 64, 1);
+}
+
+.adjacent {
+    background-color:rgba(157, 207, 255, 0.61);
 }
 
 .hit {
-    background-color: red;
+    background-color: rgb(168, 0, 0);
 }
 
 .miss {
-    background-color: rgb(194, 194, 194);
+    background-color: rgb(253, 252, 252);
 }
 
-.row:nth-child(2n) .default:nth-child(2n){
+
+/*.row:nth-child(2n) .default:nth-child(2n){
     background-color:rgb(47, 58, 211);
 }
 
@@ -46,4 +65,4 @@ header {
 
 .row:nth-child(2n-1) .default:nth-child(2n-1){
     background-color:rgb(47, 58, 211);
-}
+}*/
