@@ -19,9 +19,17 @@ img {
     transform: translate(-50%, -50%);
     z-index: -1;
 }
-
-a:hover, a:active {
-    background-color: yellow;
+  a.button{
+  background-color: Yellow;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  display: inline-block;
+  font-size: 32px;     
+}
+  a:hover, a:active {
+  background-color: yellow;
 }
 
 a {
