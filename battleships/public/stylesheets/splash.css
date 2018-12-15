@@ -15,6 +15,11 @@ img {
   margin-right: auto;
 }
 
+a {
+    text-align: center;
+    color: green;
+}
+
 h3 {
     color: black;
     text-align: center;
