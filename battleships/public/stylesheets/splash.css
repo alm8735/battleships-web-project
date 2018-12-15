@@ -9,6 +9,14 @@ h1 {
     text-align: center;
 }
 
+img {
+ position: absolute;
+ right: 0px;
+ width: 800px;
+ border: 5px solid #73AD21;
+ padding: 10px;
+}
+
 h3 {
     color: black;
     text-align: center;
