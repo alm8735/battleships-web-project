@@ -17,6 +17,15 @@ img {
  padding: 10px;
 }
 
+.button{
+    text-align: center;
+    background-color: green;
+    height: 100px;
+    width: 200px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
 h3 {
     color: black;
     text-align: center;
