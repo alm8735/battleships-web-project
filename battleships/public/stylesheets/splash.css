@@ -4,7 +4,12 @@ body {
     margin: auto;
 }
 
-h1 {
+h3 {
+    color: black;
+    text-align: center;
+}
+
+li {
     color: black;
     text-align: center;
 }
