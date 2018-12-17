@@ -20,25 +20,22 @@ img {
     z-index: -1;
 }
   a.button{
-  background-color: Yellow;
-  border: none;
-  color: black;
-  padding: 15px 32px;
-  text-align: center;
-  display: inline-block;
-  font-size: 32px;     
-}
-  a:hover, a:active {
-  background-color: yellow;
-}
-
-a {
+    background-color:yellow;
+    border-radius: 20px;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    display: inline-block;
+    font-size: 32px;
     position:absolute;
     top:40%;
     left:50%;
     transform: translate(-50%, -50%);
 }
 
+a:hover, a:active {
+  background-color: greenyellow;
+}
 
 h3 {
     color: black;
