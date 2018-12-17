@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8" /> <!--Character-set is specified to the unicode of "utf-8" which is all universal characters-->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!--  -->
-    <title>Battleships</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <title>Battleships</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/game.css" />
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
@@ -12,15 +12,15 @@
 
 <body>
     <header>
-        <a href="/splash">HOME</a>
+        <a href="/splash">HOME</a> <!-- Goes back to the splash when the HOME button is pressed-->
     </header>
 
     <main>
 
-        <div id="boards">
+        <div id="boards"> <!-- Refers to a part of the HTML document with the id called boards-->
 
-            <div class="board-parent" id="player-board">
-                <h3>Your ships</h3>
+            <div class="board-parent" id="player-board"> <!-- refers to the class called board parent with the id player-board--> 
+                <h3>Your ships</h3> <!-- Header is created-->
             </div>
 
             <div class="board-parent" id="opponent-board">
@@ -29,18 +29,19 @@
 
         </div>
         
-        <div id="ship-pallet">
+        <div id="ship-pallet"> 
             <h3>Your ship pallet</h3>
+            <!-- Label tag is used which allows the ships to be rotated and the user to press on the buttons inside the grid-->
             <label><input type="checkbox" name="rotate" value=true>Vertical Ship</label>
         </div>
 
-        <div id="message">
-            <p id="hit-opp-message"></p>
+        <div id="message"> 
+            <p id="hit-opp-message"></p> <!-- Paragraphs created with an id, which is in the qoutation marks-->
             <p id="hit-self-message"></p>
             <p id="main-message">Place your ships and click "Ready" when you are done.</p>
         </div>
 
-        <button id="ready-button">Ready</button>
+        <button id="ready-button">Ready</button> <!-- Ready button is created-->
 
     </main>
 </body>
