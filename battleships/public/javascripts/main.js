@@ -249,12 +249,12 @@ var main = function() {
 
         // this is going to need LOTS of commenting.
 
-        var findShipCells = function(isVertical, $firstCell, firstIdx, shipLength) {
+        var findShipCells = function(isVertical, $firstCell, firstIdx, shipLength) { //Creating a variable which is equal to the 4 functions
 
-            var shipBreadthPos, boardLength, boardBreadth, forward, back, right, left;
+            var shipBreadthPos, boardLength, boardBreadth, forward, back, right, left; //6 variables created
 
-            if (!isVertical) {
-                shipBreadthPos = $firstCell.attr("row");
+            if (!isVertical) { //if condition (is not vertical)
+                shipBreadthPos = $firstCell.attr("row"); // variable shipBreadthPos calls to the method firstcell to return the attribute row
                 boardLength = gameData.gameBoard.getWidth();
                 boardBreadth = gameData.gameBoard.getHeight();
                 forward = function($cell) {return $cell.next();};
