@@ -1,14 +1,14 @@
 body {
-    background-color: aquamarine;
-    width: 1366px;
+    background-color: aquamarine; /*Background color of splash screen set to aquamarine */
+    width: 1366px; /*setting the width of the screen to 1366px-according to Assignment 3*/
     /*margin: auto;*/
 }
 
 h1 {
-    color: black;
-    position:absolute;
-    top:10%;
-    left:50%;
+    color: black; /*Header 1 should be black*/
+    position:absolute; /*the position of header 1 is set to absolute*/
+    top:10%;  
+    left:50%; 
     transform: translate(-50%, -50%);
 }
 
@@ -19,14 +19,14 @@ img {
     transform: translate(-50%, -50%);
     z-index: -1;
 }
-  a.button{
-  background-color: Yellow;
-  border: none;
+  a.button {
+  background-color: Yellow; 
+  border: none; /*The button does not have any border */
   color: black;
   padding: 15px 32px;
-  text-align: center;
-  display: inline-block;
-  font-size: 32px;   
+  text-align: center; /* the text inside the button is aligned in its center */ 
+  display: inline-block; /* display the button horizontally */
+  font-size: 32px; /* The size of the text inside the button */
  
 }
   a:hover, a:active {
