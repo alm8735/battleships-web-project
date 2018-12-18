@@ -33,7 +33,7 @@ img {
   background-color: yellow;
 }
 
-a {
+a { /* Position of the button */
     position:absolute;
     top:40%;
     left:50%;
